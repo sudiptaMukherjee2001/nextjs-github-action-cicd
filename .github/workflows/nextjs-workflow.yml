@@ -23,6 +23,7 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/nextjs-github:latest
     
   Deploy:
+      needs: build-and-push
       name: Deploy to EC2
       runs-on: ubuntu-latest
     
@@ -41,6 +42,8 @@ jobs:
           # Now we have got the access of EC2 and we will start the deploy .
             # Pull the latest image from Docker Hub
             docker pull ${{ secrets.DOCKER_USERNAME }}/nextjs-github:latest
+            # Stop and remove the existing container if it exists
+            docker rm -f nextjs-app || true
             # run the container
             docker run -d -p 3000:3000 --name nextjs-app ${{ secrets.DOCKER_USERNAME }}/nextjs-github:latest
           '
